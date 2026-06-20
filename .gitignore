@@ -8,8 +8,8 @@ build/
 .env
 .venv/
 venv/
-data/resumes/*.pdf
-data/labels/*.json
+data/resumes/
+data/labels/
 *.db
 milvus_data/
 .idea/

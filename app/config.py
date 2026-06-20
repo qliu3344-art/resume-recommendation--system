@@ -37,10 +37,8 @@ class Settings:
     EMBEDDING_MODEL: str = "text-embedding-v3"
     EMBEDDING_DIM: int = 1024
 
-    # Milvus Lite
-    MILVUS_DB_PATH: str = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "milvus_data", "resume.db"
-    )
+    # FAISS 向量索引（纯英文路径，FAISS 不支持中文路径）
+    FAISS_INDEX_DIR: str = "D:/GitHub/resume_system_data"
 
     # 文件存储
     UPLOAD_DIR: str = os.path.join(

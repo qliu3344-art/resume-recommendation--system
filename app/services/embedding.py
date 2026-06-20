@@ -19,9 +19,9 @@ def get_embedding(text: str) -> list[float]:
 
 
 def get_embeddings(texts: list[str]) -> list[list[float]]:
-    """批量将文本转换为向量（每次最多 25 条）。"""
+    """批量将文本转换为向量（每次最多 6 条，DashScope 限制）。"""
     all_embeddings = []
-    batch_size = 25
+    batch_size = 6
     for i in range(0, len(texts), batch_size):
         batch = texts[i : i + batch_size]
         resp = TextEmbedding.call(

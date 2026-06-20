@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.models.resume import ResumeFields
 from app.models.job import Job
-from app.services.embedding import get_embedding
 from app.services.dedup import get_dedup
 
 
@@ -69,24 +68,9 @@ def keyword_match(resume_fields: ResumeFields, requirements: dict) -> tuple[floa
 
 
 def semantic_match(job_description: str, top_k: int = 20) -> list[dict]:
-    """第二层：RAG 语义检索，返回最相似的简历向量 ID 和分数。"""
+    """第二层：RAG 语义检索，返回最相似的简历 ID 和分数。"""
     dedup = get_dedup()
-    vector = get_embedding(job_description)
-    results = dedup.client.search(
-        collection_name=dedup.collection_name,
-        data=[vector],
-        limit=top_k,
-        output_fields=["resume_id", "text"],
-        search_params={"metric_type": "COSINE"},
-    )
-    matches = []
-    if results and len(results[0]) > 0:
-        for hit in results[0]:
-            matches.append({
-                "resume_id": hit["entity"]["resume_id"],
-                "score": hit["distance"],
-            })
-    return matches
+    return dedup.search_similar(job_description, top_k=top_k)
 
 
 def match_job_to_resumes(
