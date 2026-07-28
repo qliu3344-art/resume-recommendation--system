@@ -51,10 +51,14 @@ def keyword_match(resume_fields: ResumeFields, requirements: dict) -> tuple[floa
             scores.append(0.0)
             details["years"] = f"不满足（{actual_years} < {req_years}）"
 
-    # 技能匹配
+    # 技能匹配 — 合并 skills 和 project_experience 中的 tech_stack
     req_skills = requirements.get("required_skills", [])
     if req_skills:
         resume_skills = set(s.lower() for s in (resume_fields.skills or []))
+        # 从项目经历中提取技术栈作为技能补充
+        for proj in (resume_fields.project_experience or []):
+            for tech in (proj.get("tech_stack") or []):
+                resume_skills.add(tech.lower())
         matched = sum(1 for s in req_skills if s.lower() in resume_skills)
         skill_score = matched / len(req_skills)
         scores.append(skill_score)
@@ -98,8 +102,8 @@ def match_job_to_resumes(
     if not keyword_passed:
         return []
 
-    # 第二层：语义检索
-    semantic_results = semantic_match(description, top_k=top_k * 2)
+    # 第二层：语义检索（动态 k = 全部关键词通过者，避免漏算）
+    semantic_results = semantic_match(description, top_k=len(keyword_passed))
     semantic_scores = {r["resume_id"]: r["score"] for r in semantic_results}
 
     # 综合评分

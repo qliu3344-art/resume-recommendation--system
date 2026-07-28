@@ -26,6 +26,7 @@ class ResumeFieldsOut(BaseModel):
     major: Optional[str] = None
     graduation_year: Optional[int] = None
     work_experience: Optional[list] = None
+    project_experience: Optional[list] = None
     skills: Optional[list] = None
     is_duplicate: bool = False
 

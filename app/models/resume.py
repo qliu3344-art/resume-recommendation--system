@@ -42,6 +42,7 @@ class ResumeFields(Base):
     major = Column(String(100), nullable=True)
     graduation_year = Column(Integer, nullable=True)
     work_experience = Column(JSON, nullable=True)
+    project_experience = Column(JSON, nullable=True)
     skills = Column(JSON, nullable=True)
     vector_id = Column(String(100), nullable=True)
     is_duplicate = Column(Boolean, default=False, nullable=False)

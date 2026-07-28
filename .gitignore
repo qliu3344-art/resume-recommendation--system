@@ -3,15 +3,16 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-.eggs/
-*.egg
 .env
 .venv/
 venv/
 data/resumes/
 data/labels/
 *.db
-milvus_data/
 .idea/
 .vscode/
 *.log
+
+# 前端（不提交构建产物和依赖）
+frontend/node_modules/
+frontend/dist/

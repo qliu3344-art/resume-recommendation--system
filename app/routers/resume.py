@@ -94,6 +94,7 @@ def parse_resume(resume_id: int, db: Session = Depends(get_db)):
         major=parsed.get("major"),
         graduation_year=parsed.get("graduation_year"),
         work_experience=parsed.get("work_experience"),
+        project_experience=parsed.get("project_experience"),
         skills=parsed.get("skills"),
         is_duplicate=is_dup,
     )

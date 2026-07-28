@@ -111,7 +111,8 @@ VALIDATE_PROMPT = """你是一个简历信息校验专家。请根据以下简�
 2. 如有错误，修正为正确值
 3. 如有遗漏的重要信息，补充完整
 4. 工作经历中每段应包含：company、position、period、description
-5. 直接输出修正后的完整JSON，不要输出其他内容
+5. 从原文中提取项目经历，每段包含：project_name、role、period、description、tech_stack
+6. 直接输出修正后的完整JSON，不要输出其他内容
 
 ## 输出格式（严格JSON）
 {{
@@ -125,6 +126,9 @@ VALIDATE_PROMPT = """你是一个简历信息校验专家。请根据以下简�
   "graduation_year": null,
   "work_experience": [
     {{"company": "", "position": "", "period": "", "description": ""}}
+  ],
+  "project_experience": [
+    {{"project_name": "", "role": "", "period": "", "description": "", "tech_stack": []}}
   ],
   "skills": []
 }}
