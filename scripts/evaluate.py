@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.resume import Resume, ResumeFields
 from app.models.job import Job, JobMatch
+from app.services.normalize import education_to_level
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 LABEL_DIR = os.path.join(BASE_DIR, "data", "labels")
@@ -25,6 +26,21 @@ def load_dup_groups() -> list:
     """加载重复组。"""
     with open(os.path.join(LABEL_DIR, "duplicate_groups.json"), "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def _fields_equal(field_name: str, actual, expected) -> bool:
+    """字段比对：学历比等级、专业比包含关系，其余严格相等。
+
+    学历用等级比对（「硕士在读」和「硕士」等级相同，避免假阴性）；
+    专业用包含比对（「计算机科学与技术」包含「计算机科学」，避免全称/简称误判）。
+    """
+    if field_name == "education":
+        return education_to_level(actual) == education_to_level(expected)
+    if field_name == "major":
+        a = str(actual).strip()
+        e = str(expected).strip()
+        return bool(a) and bool(e) and (a in e or e in a)
+    return str(actual).strip() == str(expected).strip()
 
 
 def evaluate_extraction(db: Session, sample_size: int = 50):
@@ -49,7 +65,7 @@ def evaluate_extraction(db: Session, sample_size: int = 50):
             expected = label.get(field_name)
             if actual is not None and expected is not None:
                 total_checks += 1
-                if str(actual).strip() == str(expected).strip():
+                if _fields_equal(field_name, actual, expected):
                     correct_checks += 1
 
     accuracy = correct_checks / total_checks if total_checks > 0 else 0

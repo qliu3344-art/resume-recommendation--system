@@ -17,6 +17,7 @@ from app.services.parser import parse_file
 from app.services.ai_extractor import extract_resume_fields
 from app.services.dedup import get_dedup
 from app.services.desensitize import desensitize
+from app.services.normalize import normalize_education
 from app.config import settings
 
 router = APIRouter(prefix="/resumes", tags=["简历管理"])
@@ -89,7 +90,7 @@ def parse_resume(resume_id: int, db: Session = Depends(get_db)):
         phone=parsed.get("phone"),
         id_card=parsed.get("id_card"),
         email=parsed.get("email"),
-        education=parsed.get("education"),
+        education=normalize_education(parsed.get("education")),
         school=parsed.get("school"),
         major=parsed.get("major"),
         graduation_year=parsed.get("graduation_year"),
