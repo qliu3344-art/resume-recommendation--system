@@ -221,3 +221,58 @@ def extract_resume_fields(text: str) -> dict:
     except Exception as e:
         _logger.warning(f"qwen-plus 校验失败，降级使用 UIE 结果: {e}")
         return uie_result
+
+
+# ---------- 岗位描述结构化（两侧文本形态对齐） ----------
+
+JOB_STRUCTURE_PROMPT = """你是招聘岗位描述规范化助手。下面这段岗位信息过于简略，请扩写成一段规范的岗位描述。
+
+## 岗位标题
+{title}
+
+## 原始描述
+{description}
+
+## 结构化要求
+{requirements}
+
+## 要求
+1. 覆盖岗位职责、技术要求（语言 / 框架 / 中间件 / 数据库）、经验要求
+2. 只根据给出的信息扩写，不要编造公司名、薪资、福利这类没有依据的具体信息
+3. 直接输出描述正文，不要输出 JSON，不要输出任何解释或标题
+
+"""
+
+
+def structure_job_description(title: str, description: str, requirements: dict) -> str:
+    """把过于简略的岗位描述扩写成规范描述。
+
+    简历侧是字段拼接成的类自然语言文本，岗位侧如果只有两行，两侧文本形态
+    不对齐会让向量分布产生系统性偏差。这一步是把岗位侧补到同一个文本分布
+    里，是语义召回率的前提。
+
+    失败时降级返回原始描述——岗位侧文本质量下降，好过整个匹配流程中断。
+    """
+    import logging
+
+    prompt = JOB_STRUCTURE_PROMPT.format(
+        title=title or "",
+        description=description or "（无）",
+        requirements=json.dumps(requirements or {}, ensure_ascii=False),
+    )
+    try:
+        resp = Generation.call(
+            model=settings.LLM_VALIDATE_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            result_format="message",
+            temperature=0.3,
+        )
+        if resp.status_code != 200:
+            raise RuntimeError(f"{resp.code} {resp.message}")
+        structured = resp.output.choices[0].message.content.strip()
+        return structured or description
+    except Exception as e:
+        logging.getLogger(__name__).warning(
+            f"岗位描述结构化失败，降级使用原始描述: {e}"
+        )
+        return description

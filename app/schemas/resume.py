@@ -28,6 +28,8 @@ class ResumeFieldsOut(BaseModel):
     work_experience: Optional[list] = None
     project_experience: Optional[list] = None
     skills: Optional[list] = None
+    education_level: int = 0
+    work_months: int = 0
     is_duplicate: bool = False
 
     class Config:
