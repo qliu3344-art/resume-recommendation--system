@@ -84,7 +84,7 @@ def judge_relevance(job_desc, resume_fields, keyword_score, semantic_score, tota
         model=settings.LLM_JUDGE_MODEL,
         messages=[{"role": "user", "content": prompt}],
         result_format="message",
-        temperature=0.1,  # judge 要确定性
+        temperature=0,  # judge 要确定性，与校验阶段同一条规矩
     )
     if resp.status_code != 200:
         return {"relevant": None, "reason": f"judge 调用失败: {resp.code} {resp.message}"}

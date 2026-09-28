@@ -191,7 +191,7 @@ def validate_with_qwen(text: str, uie_result: dict) -> dict:
         model=settings.LLM_VALIDATE_MODEL,
         messages=[{"role": "user", "content": prompt}],
         result_format="message",
-        temperature=0.1,
+        temperature=0,  # 贪心解码，去掉采样随机性（校验是纠错任务，不需要发散）
     )
 
     if resp.status_code != 200:
