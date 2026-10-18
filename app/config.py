@@ -44,7 +44,7 @@ class Settings:
 
     # 模型配置
     LLM_VALIDATE_MODEL: str = "qwen-plus"
-    LLM_JUDGE_MODEL: str = "qwen3-max"  # judge 另起一档，见讲稿一/模型名落点
+    LLM_JUDGE_MODEL: str = "qwen3-max"  # judge 与生成分开用档，避免同一模型自评偏差
     EMBEDDING_MODEL: str = "text-embedding-v3"
     EMBEDDING_DIM: int = 1024
 
@@ -54,23 +54,23 @@ class Settings:
     )
 
     # 去重阈值：刻意取高。假阳性是不可逆的数据丢失，假阴性可恢复，
-    # 两类错误代价不对称，所以往高取（推导见讲稿 6.4）
+    # 两类错误代价不对称，所以往高取
     DEDUP_SIMILARITY_THRESHOLD: float = 0.95
 
-    # 匹配权重：网格搜索在 [0.3, 0.7] 按 0.05 步长扫 9 个点取峰值（见讲稿 6.5）
+    # 匹配权重：网格搜索在 [0.3, 0.7] 按 0.05 步长扫 9 个点取峰值
     KEYWORD_MATCH_WEIGHT: float = 0.4
     SEMANTIC_MATCH_WEIGHT: float = 0.6
 
-    # 语义检索封顶：返回更多没有业务意义，而且会掩盖上游门槛配置问题（见讲稿 6.9）
+    # 语义检索封顶：返回更多没有业务意义，而且会掩盖上游门槛配置问题
     SEMANTIC_SEARCH_MAX_K: int = 200
 
     # 岗位描述短于这个长度就算「质量不足」，先用 LLM 结构化成与简历侧同一套
-    # 字段形态再向量化（讲稿 P078 / P125）
+    # 字段形态再向量化
     JOB_DESCRIPTION_MIN_LEN: int = 30
 
     # HNSW 运行时参数。迭代扫描用于防 overfiltering：索引默认先取 ef_search
     # 个候选再拿 WHERE 去筛，过滤选择性一低就返回不足，开了之后继续扫直到凑够
-    # 或撞上 max_scan_tuples（见讲稿 P076）。需要 pgvector 0.8.0+
+    # 或撞上 max_scan_tuples。需要 pgvector 0.8.0+
     HNSW_EF_SEARCH: int = 100
     HNSW_ITERATIVE_SCAN: str = "relaxed_order"
     HNSW_MAX_SCAN_TUPLES: int = 20000

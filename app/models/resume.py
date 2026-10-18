@@ -61,14 +61,14 @@ class ResumeFields(Base):
 
     # 门槛项：入库前算好并落成列。落成列是为了让「学历达标 且 年限达标」这一步
     # 能走 B-tree 索引在数据库层先粗筛，而不是把全表拉进 Python 再判断
-    # （讲稿 P100 归一化在入库前做；P126 前置粗筛）
+    # （归一化在入库前完成，粗筛前置到数据库层）
     education_level = Column(SmallInteger, nullable=False, default=0)
     work_months = Column(Integer, nullable=False, default=0)
 
     # 两份特征文本各一个向量。去重和检索的「相似」定义不同，共用一份必然
-    # 有一件事是错的（讲稿 P068-P070）：
-    #   dedup_vec     = 稳定锚点（姓名+学校+公司），走精确检索，不建索引（P074）
-    #   retrieval_vec = 能力信号（学历+专业+技能+项目技术栈+工作经历），建 HNSW（P075）
+    # 有一件事是错的：
+    #   dedup_vec     = 稳定锚点（姓名+学校+公司），走精确检索，不建索引
+    #   retrieval_vec = 能力信号（学历+专业+技能+项目技术栈+工作经历），建 HNSW
     dedup_vec = Column(Vector(settings.EMBEDDING_DIM), nullable=True)
     retrieval_vec = Column(Vector(settings.EMBEDDING_DIM), nullable=True)
 
